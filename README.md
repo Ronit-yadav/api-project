@@ -2,6 +2,7 @@ Bookman API
 Bookman API is a Node.js Express application that serves as a book management system. It provides endpoints to interact with books, authors, and publications.
 
 Requirements
+
 Books
 Get all books
 Get a specific book by ISBN
@@ -15,18 +16,15 @@ Publications
 Get all publications
 Get a specific publication
 Get a list of publications based on a book
-Installation
-Clone the repository:
-bash
-Copy code
-git clone https://github.com/your-username/bookman-api.git
-Install dependencies:
-Copy code
-npm install
-Start the server:
-sql
-Copy code
-npm start
+
+** node pakckage to installed in terminal window **
+1) npm i node.
+2) npm i nodemon.
+3) npm i express.
+4) npm init.
+   use npx nodemon index.js to run file
+
+
 Endpoints
 Books
 Get all books: GET /
