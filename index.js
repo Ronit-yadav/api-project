@@ -1,10 +1,18 @@
+//initialize express
 const express = require("express");
 
+//database
+
+var bodyParser = require("body-parser");
+
 const database = require("./database");
+
 const { isBooleanObject } = require("util/types");
-//initialize express
+
+
 
 const bookman = express();
+bookman.use(bodyParser.urlencoded({extended: true}));
 
 
 /* 
