@@ -14,7 +14,7 @@ const { isBooleanObject } = require("util/types");
 const bookman = express();
 bookman.use(bodyParser.urlencoded({extended: true}));
 
-
+bookman.use(bodyParser.json());
 /* 
     Route         : /
     Description   : get all the books
@@ -23,7 +23,7 @@ bookman.use(bodyParser.urlencoded({extended: true}));
     Methods       : get
 */
 
-bookman.get("/", (req,res) => {
+bookman.get("/book", (req,res) => {
     return res.json({books: database.books});
 });
 
@@ -155,6 +155,143 @@ Methods          GET
 bookman.get("/public",(req,res) => {
     const getPublication = database.publication;
     return res.json({publication : getPublication})
+})
+
+/*
+Route            /books/new
+Description      post the data book
+Access           PUBLIC
+Parameter        none
+Methods          GET
+*/
+
+bookman.post("/books/new",(req,res) => {
+    const newBook = req.body;
+    database.books.push(newBook);
+    return res.json({updateBooks : database.books});
+});
+
+
+/*
+Route            /author/new
+Description      post the data book
+Access           PUBLIC
+Parameter        none
+Methods          GET
+*/
+
+bookman.post("/author/new",(req,res) => {
+    const newAuthor = req.body;
+    database.author.push(newAuthor);
+    return res.json({updateBooks : database.author});
+});
+
+
+/*
+Route            /publication/new
+Description      Add new publications
+Access           PUBLIC
+Parameter        NONE
+Methods          POST
+*/
+
+bookman.post("/publication/new", (req,res) => {
+    const newPublication = req.body;
+    database.publication.push(newPublication);
+    return res.json(database.publication);
+});
+
+
+/**************PUT***************/
+/*
+Route            /publication/update/book
+Description      Update /add new publication
+Access           PUBLIC
+Parameter        isbn
+Methods          PUT
+*/
+
+bookman.put("/publication/update/book/:isbn", (req,res) => {
+    database.publication.forEach((pub) => {
+        if(pub.id === req.body.pubID){
+            return pub.books.push(req.params.isbn);
+        }
+    })
+    database.books.forEach((book) => {
+        if(book.ISBN === req.body.isbn){
+            book.publication = req.body.pubID;
+            return;
+        }
+    })
+    return res.json(
+        {
+            books : database.books,
+            publications : database.publication,
+            message : "Successfully updated publication"
+        }
+    )
+})
+
+
+/****DELETE*****/
+/*
+Route            /book/delete
+Description      Delete a book
+Access           PUBLIC
+Parameter        isbn
+Methods          DELETE
+*/
+
+bookman.delete("/book/delete/:isbn" ,(req,res) => {
+    const updatedBookDatabase = database.books.filter((book) => {
+        book.ISBN !== req.params.isbn;
+    })
+    database.books = updatedBookDatabase;
+    return res.json(
+        {
+            books : database.books,
+            result : "updated Book Database!!!"
+        }
+    );
+})
+
+
+/*
+Route            /book/delete/author
+Description      Delete an author from a book and vice versa
+Access           PUBLIC
+Parameter        isbn, authorId
+Methods          DELETE
+*/
+
+bookman.delete("/book/delete/author/:isbn/:authorId",(req,res) => {
+    //update the book database
+    database.books.forEach((book) => {
+        if(book.ISBN === req.params.isbn){
+            const newAuthorList = book.author.filter((auth) => {
+                auth !== parseInt(req.params.authorId);
+            })
+            book.author = newAuthorList;
+        }
+        return;
+    })
+    //update the author database
+    database.author.forEach((auth) => {
+        if(auth.id === parseInt(req.params.authorId)){
+            const newBookList = database.author.filter((book) => {
+                book !== req.params.isbn;
+            })
+            database.author = newBookList;
+        }
+        return;
+    })
+    return res.json(
+        {
+            book : database.books,
+            author : database.author,
+            message : "Author was deleted"
+        }
+    )
 })
 
 bookman.listen(1111,() => {
